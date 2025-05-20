@@ -6,10 +6,10 @@ This repository contains a personal Bash configuration setup that works across b
 
 ## ⚙️ Setup Instructions
 
-1. **Clone or move the `bashconfig` folder into your home directory:**
+1. **Clone or move the `bash-config` folder into your home directory and ensure to rename it to `bashconfig`:**
 
     ```bash
-    mv bashconfig ~/bashconfig
+    mv bash-config ~/bashconfig
     ```
 
 2. **Open the file [`doc/bashrc.txt`](doc/bashrc.txt).**
