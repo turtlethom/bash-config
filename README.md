@@ -6,16 +6,21 @@ This repository contains a personal Bash configuration setup that works across b
 
 ## ⚙️ Setup Instructions
 
-To initialize the configuration:
-
-1. Open the file [`doc/bashrc.txt`](doc/bashrc.txt).
-2. Copy its contents into your `~/.bashrc` file:
+1. **Clone or move the `bashconfig` folder into your home directory:**
 
     ```bash
-    cat doc/bashrc.txt >> ~/.bashrc
+    mv bashconfig ~/bashconfig
     ```
 
-3. Reload your shell or source the updated file:
+2. **Open the file [`doc/bashrc.txt`](doc/bashrc.txt).**
+
+3. **Append its contents to your `~/.bashrc` file:**
+
+    ```bash
+    cat ~/bashconfig/doc/bashrc.txt >> ~/.bashrc
+    ```
+
+4. **Reload your shell or source the updated file:**
 
     ```bash
     source ~/.bashrc
@@ -38,4 +43,4 @@ To initialize the configuration:
 
 ---
 
-Feel free to fork or clone for your own setup.
+Feel free to fork or clone for your own shell setup. Contributions and ideas welcome!
