@@ -1,0 +1,9 @@
+# COPY THIS INTO BASHRC TO LOAD BASHCONFIG
+# Set Terminal Path To ~
+cd ~
+
+BASH_CONFIG=$HOME/bashconfig/main.sh
+
+if [ -f $BASH_CONFIG ]; then
+  source $BASH_CONFIG
+fi
