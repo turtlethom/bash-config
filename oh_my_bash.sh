@@ -6,7 +6,13 @@ case $- in
 esac
 
 # Path to your oh-my-bash installation.
-export OSH='/home/user/.oh-my-bash'
+export OSH="$HOME/.oh-my-bash"
+
+if [ -f "$OSH/oh-my-bash.sh" ]; then
+  source "$OSH/oh-my-bash.sh"
+else
+  echo "Oh My Bash not found at $OSH"
+fi
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
