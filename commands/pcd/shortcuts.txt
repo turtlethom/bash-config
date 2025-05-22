@@ -1,0 +1,7 @@
+NEOVIM=/.config/nvim/
+LEETCODE=/Desktop/workspace/leetcode/
+TURTLETHOM=/Desktop/workspace/TURTLETHOM/
+FRONTEND_MENTOR=/Desktop/workspace/frontend-mentor/
+ASEPRITE_ART=/Desktop/workspace/aseprite-art/
+GHOSTTY_CONFIG=/.config/ghostty/
+BASH_CONFIG=/bashconfig/

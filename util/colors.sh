@@ -1,3 +1,4 @@
+# echo "Sourcing $(basename "${BASH_SOURCE[0]}")"
 declare -A colors=(
     ["red"]="#FF0000"
     ["green"]="#00FF00"

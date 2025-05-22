@@ -1,26 +1,40 @@
-BASH_CONFIG_DIR="${BASH_CONFIG%/*}"
+# ~/bashconfig/main.sh
 
-# Skip for non-interactive shells
-# [[ $- != *i* ]] && return
+# Set the base directory
+export BASHDIR="$HOME/bashconfig"
 
-# Source Startup Config
-if [ -f "$BASH_CONFIG_DIR/startup.sh" ]; then
-  source "$BASH_CONFIG_DIR/startup.sh"
-  # echo "Startup loaded"
+# 1. Source utility functions
+if [ -d "$BASHDIR/util" ]; then
+    for util_file in "$BASHDIR"/util/*.sh; do
+        if [ -f "$util_file" ]; then
+            source "$util_file"
+        fi
+    done
 fi
 
-# Source 'Oh-My-Bash'
-if [ -f "$BASH_CONFIG_DIR/oh_my_bash.sh" ]; then
-  source "$BASH_CONFIG_DIR/oh_my_bash.sh"
-  # echo "Sourced oh_my_bash.sh"
+# 2. Source other preferences (except aliases.sh)
+if [ -d "$BASHDIR/preferences" ]; then
+    for pref_file in "$BASHDIR"/preferences/*.sh; do
+        if [ -f "$pref_file" ] && [ "$pref_file" != "$BASHDIR/preferences/aliases.sh" ]; then
+            source "$pref_file"
+        fi
+    done
 fi
 
-if [ -f "$BASH_CONFIG_DIR/aliases.sh" ]; then
-  source "$BASH_CONFIG_DIR/aliases.sh"
-  # echo "Loading aliases from $BASH_CONFIG_DIR/aliases.sh"
+# 3. Source commands
+if [ -d "$BASHDIR/commands" ]; then
+    for cmd_dir in "$BASHDIR"/commands/*; do
+        if [ -d "$cmd_dir" ]; then
+            for cmd_file in "$cmd_dir"/*.sh; do
+                if [ -f "$cmd_file" ]; then
+                    source "$cmd_file"
+                fi
+            done
+        fi
+    done
 fi
 
-if [ -f "$BASH_CONFIG_DIR/commands.sh" ]; then
-  source "$BASH_CONFIG_DIR/commands.sh"
-  # echo "Sourced commands.sh"
+# 4. Load aliases LAST to prevent overrides
+if [ -f "$BASHDIR/preferences/aliases.sh" ]; then
+    source "$BASHDIR/preferences/aliases.sh"
 fi

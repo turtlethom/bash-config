@@ -1,4 +1,5 @@
 # OHMYBASH
+# echo "Sourcing $(basename "${BASH_SOURCE[0]}")"
 # Enable the subsequent settings only in interactive sessions
 case $- in
   *i*) ;;
