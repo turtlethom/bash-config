@@ -8,6 +8,15 @@ pcd() {
   declare -A paths
   declare -a labels_in_order
   local selected_key
+  # --- Check if fzf is installed ---
+  if ! command -v fzf &> /dev/null; then
+    echo "Error: 'fzf' is required but not installed." >&2
+    echo "Install it with:" >&2
+    echo "  sudo apt install fzf  # Debian/Ubuntu" >&2
+    echo "  brew install fzf      # macOS" >&2
+    echo "Or see: https://github.com/junegunn/fzf#installation" >&2
+    return 1
+  fi
 
   # --- SECURITY CHECKS ---
   # 1. Validate shortcuts file exists and is owned by the user.
