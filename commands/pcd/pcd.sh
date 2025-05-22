@@ -6,6 +6,7 @@
 pcd() {
   local shortcuts_file="${1:-$HOME/bashconfig/commands/pcd/shortcuts.txt}"
   declare -A paths
+  declare -a labels_in_order
   local selected_key
 
   # --- SECURITY CHECKS ---
@@ -50,8 +51,9 @@ pcd() {
       continue
     fi
 
-    # Store valid paths
+    # Store valid paths and maintain order for prefixing
     paths["$label"]="$resolved_path"
+    labels_in_order+=("$label")
   done < "$shortcuts_file"
 
   # --- INTERACTIVE SELECTION ---
@@ -60,8 +62,22 @@ pcd() {
     return 1
   fi
 
+  # Generate prefixed labels for display
+  local -a prefixed_labels
+  local prefix_index=0
+  for label in "${labels_in_order[@]}"; do
+    # Calculate prefix (a, b, c, ..., z, aa, ab, etc.)
+    local prefix
+    prefix=$(printf "\\$(printf '%03o' $((97 + prefix_index % 26)))")
+    if (( prefix_index >= 26 )); then
+      prefix=$(printf "\\$(printf '%03o' $((97 + (prefix_index / 26 - 1) % 26)))")$prefix
+    fi
+    prefixed_labels+=("$prefix) $label")
+    ((prefix_index++))
+  done
+
   selected_key=$(
-    printf "%s\n" "${!paths[@]}" | fzf \
+    printf "%s\n" "${prefixed_labels[@]}" | fzf \
       --reverse \
       --height 40% \
       --bind 'ctrl-j:down,ctrl-k:up' \
@@ -70,11 +86,13 @@ pcd() {
 
   # --- CHANGE DIRECTORY ---
   if [[ -n "$selected_key" ]]; then
-    cd "${paths[$selected_key]}" || {
-      echo "Error: Failed to change directory to '${paths[$selected_key]}'" >&2
+    # Extract the original label by removing the prefix
+    local original_label="${selected_key#*) }"
+    cd "${paths[$original_label]}" || {
+      echo "Error: Failed to change directory to '${paths[$original_label]}'" >&2
       return 1
     }
-    echo "Changed to: ${paths[$selected_key]}"
+    echo "Changed to: ${paths[$original_label]}"
   fi
 }
 
