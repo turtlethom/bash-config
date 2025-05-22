@@ -1,3 +1,4 @@
+#!/bin/bash
 rmd() {
   # Check argument exists
   if [ $# -eq 0 ]; then
