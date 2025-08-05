@@ -5,3 +5,4 @@ FRONTEND_MENTOR=/Desktop/workspace/frontend-mentor/
 ASEPRITE_ART=/Desktop/workspace/aseprite-art/
 GHOSTTY_CONFIG=/.config/ghostty/
 BASH_CONFIG=/bashconfig/
+TMUX_CONFIG=/Desktop/workspace/tmux-config/

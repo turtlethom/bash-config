@@ -1,4 +1,6 @@
 # Adapted from https://unix.stackexchange.com/a/113768/347104
+# Adding Go 1.22.2
+export PATH=$PATH:/usr/local/go/bin
 # echo "Sourcing $(basename "${BASH_SOURCE[0]}")"
 if [ -n "$PS1" ] && [ -z "$TMUX" ]; then
   # Adapted from https://unix.stackexchange.com/a/176885/347104

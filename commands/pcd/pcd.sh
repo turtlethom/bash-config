@@ -1,14 +1,26 @@
 #!/bin/bash
 # ~/bashconfig/commands/pcd/pcd.sh
-# REQUIRES: fzf (for interactive selection)
-# Security-hardened directory navigator with shortcuts.
+
+#############################################################################
+#<< ***** --- ( PCD ) --- ***** >># 
+# ->* Command that utilizes fzf for quickly going to bookmarked directories
+# ->* Security-hardened fzf directory navigator with shortcuts & autocomplete.
+# ***** --- REQUIREMENTS --- ***** #
+# ->* fzf (for interactive selection)
+# ->* shortcuts.txt declaration
+#############################################################################
 
 pcd() {
+  # Location of shortcut file
   local shortcuts_file="${1:-$HOME/bashconfig/commands/pcd/shortcuts.txt}"
+  # Associative array (key:value)
   declare -A paths
+  # Indexed array
   declare -a labels_in_order
+  # Name for user selected key representing shortcut
   local selected_key
-  # --- Check if fzf is installed ---
+
+  # --- VERIFY FZF INSTALLATION --- >>#
   if ! command -v fzf &> /dev/null; then
     echo "Error: 'fzf' is required but not installed." >&2
     echo "Install it with:" >&2
@@ -18,22 +30,24 @@ pcd() {
     return 1
   fi
 
-  # --- SECURITY CHECKS ---
+  #<< --- SECURITY CHECKS --- >>#
   # 1. Validate shortcuts file exists and is owned by the user.
   if [[ ! -f "$shortcuts_file" ]]; then
     echo "Error: Shortcuts file not found at '$shortcuts_file'" >&2
     return 1
   fi
 
-  # Paranoid mode: Verify file ownership (optional)
+  #<< --- IDENTITY CHECK --- >>#
+  # Paranoid mode: Verify file ownership
   if [[ "$(stat -c %U "$shortcuts_file" 2>/dev/null)" != "$USER" ]]; then
     echo "Error: '$shortcuts_file' is not owned by you!" >&2
     return 1
   fi
 
-  # --- PARSE SHORTCUTS FILE ---
+  #<< --- PARSE SHORTCUTS FILE --- >>#
+  # Parse label and respective path ('SOME_LABEL=/some/directory/')
   while IFS='=' read -r label path; do
-    # Skip empty/malformed lines
+    # 1. Skip improper/empty lines
     if [[ -z "$label" || -z "$path" ]]; then
       continue
     fi
@@ -44,7 +58,7 @@ pcd() {
       continue
     fi
 
-    # 3. Resolve path safely (prepend $HOME, resolve symlinks)
+    # 3. Resolve path safely (prepend $HOME, resolve symlinks with 'realpath')
     local resolved_path
     resolved_path="$(realpath -mP "$HOME$path" 2>/dev/null)"
 
@@ -60,18 +74,20 @@ pcd() {
       continue
     fi
 
-    # Store valid paths and maintain order for prefixing
+    #<< --- PASS ALL CHECKS --- >>#
+    #   >>> Store valid paths and maintain order for prefixing
     paths["$label"]="$resolved_path"
     labels_in_order+=("$label")
   done < "$shortcuts_file"
 
-  # --- INTERACTIVE SELECTION ---
+  #<< --- INTERACTIVE SELECTION --- >>#
+  # If no paths exist, inform and exit
   if [[ ${#paths[@]} -eq 0 ]]; then
     echo "Error: No valid directories found in '$shortcuts_file'" >&2
     return 1
   fi
 
-  # Generate prefixed labels for display
+  # Generate prefixed labels for fzf option display
   local -a prefixed_labels
   local prefix_index=0
   for label in "${labels_in_order[@]}"; do
@@ -85,6 +101,7 @@ pcd() {
     ((prefix_index++))
   done
 
+  #<< --- GRAB USER'S SELECTION INTO FZF SEARCH --- >>#
   selected_key=$(
     printf "%s\n" "${prefixed_labels[@]}" | fzf \
       --reverse \
@@ -93,7 +110,7 @@ pcd() {
       --header="Select directory (Ctrl-J/K: Navigate, Enter: Confirm)"
   )
 
-  # --- CHANGE DIRECTORY ---
+  #<< --- CHANGE DIRECTORY --- >>#
   if [[ -n "$selected_key" ]]; then
     # Extract the original label by removing the prefix
     local original_label="${selected_key#*) }"
@@ -105,7 +122,7 @@ pcd() {
   fi
 }
 
-# --- AUTOCOMPLETION FUNCTION ---
+#<< --- AUTOCOMPLETION FUNCTION --- >>#
 _pcd() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local shortcuts_file="$HOME/bashconfig/commands/pcd/shortcuts.txt"
