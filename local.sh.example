@@ -1,0 +1,23 @@
+# ~/bashconfig/local.sh.example
+# Machine-specific settings. Copy to local.sh (which git ignores) and edit:
+#   cp ~/bashconfig/local.sh.example ~/bashconfig/local.sh
+#
+# local.sh is loaded right after env.sh, for EVERY shell. Put PATH changes at
+# the top; wrap anything interactive-only (prompts, wrappers, output) in the
+# guard at the bottom.
+#
+# path_append / path_prepend come from env.sh: they skip missing directories
+# and never add a duplicate.
+
+# --- PATH (all shells) ---
+# path_prepend "$HOME/src/z390/bash/"
+# path_append  "$HOME/go/bin"
+# path_append  "$HOME/.local/bin"
+
+# --- Tool init scripts (all shells) ---
+# [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# --- Interactive only ---
+# if [[ $- == *i* ]]; then
+#   [ -f "$HOME/.local/share/fcd/fcd.bash" ] && source "$HOME/.local/share/fcd/fcd.bash"
+# fi

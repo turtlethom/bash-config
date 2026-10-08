@@ -6,18 +6,22 @@ This repository contains a personal Bash configuration setup that works across b
 
 ## ⚙️ Setup Instructions
 
-1. **Clone or move the `bash-config` folder into your home directory and ensure to rename it to `bashconfig`:**
+1. **Clone the repository into your home directory as `bashconfig`:**
 
     ```bash
-    mv bash-config ~/bashconfig
+    git clone <repo-url> ~/bashconfig
     ```
 
-2. **Open the file [`doc/bashrc.txt`](doc/bashrc.txt).**
-
-3. **Append its contents to your `~/.bashrc` file:**
+2. **Run the installer** (adds one block to `~/.bashrc`; backs it up first; safe to re-run):
 
     ```bash
-    cat ~/bashconfig/doc/bashrc.txt >> ~/.bashrc
+    bash ~/bashconfig/install.sh
+    ```
+
+3. **Optional — machine-specific settings** (extra PATH entries, tools only this machine has):
+
+    ```bash
+    cp ~/bashconfig/local.sh.example ~/bashconfig/local.sh
     ```
 
 4. **Reload your shell or source the updated file:**
@@ -30,16 +34,18 @@ This repository contains a personal Bash configuration setup that works across b
 
 ## 📁 Repository Structure
 
-| File/Directory       | Description                                  |
-|----------------------|----------------------------------------------|
-| `aliases.sh`         | Custom command aliases                       |
-| `commands.sh`        | Handy Bash functions                         |
-| `main.sh`            | Entry point for sourcing all components      |
-| `startup.sh`         | Commands to run at shell startup             |
-| `util/colors.sh`     | Color codes for prompt and terminal output   |
-| `oh_my_bash.sh`      | Optional extensions mimicking oh-my-zsh      |
-| `.shortcuts.txt`     | Notes on common or custom shortcuts          |
-| `doc/bashrc.txt`     | Snippet to append to your `.bashrc`          |
+| File/Directory               | Description                                                       |
+|------------------------------|-------------------------------------------------------------------|
+| `install.sh`                 | Hooks `main.sh` into `~/.bashrc` (idempotent)                     |
+| `main.sh`                    | Entry point; loads everything below in a fixed order              |
+| `env.sh`                     | PATH and exports — loaded for every shell, prints nothing         |
+| `local.sh.example`           | Template for `local.sh` (gitignored, per-machine settings)        |
+| `interactive/oh_my_bash.sh`  | Oh My Bash configuration and prompt                               |
+| `interactive/tmux.sh`        | Auto-attach new terminals to the tmux session `main`              |
+| `interactive/aliases.sh`     | Custom aliases — loaded last so nothing overrides them            |
+| `functions/*.sh`             | One shell function (plus its completion) per file                 |
+
+Everything under `interactive/` and `functions/` loads only in interactive shells, so `ssh host cmd`, `scp`, and `rsync` stay unaffected.
 
 ---
 

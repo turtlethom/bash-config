@@ -1,40 +1,33 @@
 # ~/bashconfig/main.sh
+# Entry point, sourced from ~/.bashrc (see install.sh). Load order matters:
+#   1. env.sh            PATH/exports          every shell
+#   2. local.sh          this machine only     every shell (optional, gitignored)
+#   -- non-interactive shells stop here --
+#   3. interactive/oh_my_bash.sh   framework + prompt
+#   4. interactive/tmux.sh         auto-attach (blocks until tmux exits)
+#   5. functions/*.sh              user commands
+#   6. interactive/aliases.sh      LAST so nothing overrides the aliases
 
-# Set the base directory
-export BASHDIR="$HOME/bashconfig"
+# Repo location, derived from this file so the repo can live anywhere
+BASHDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+export BASHDIR
 
-# 1. Source utility functions
-if [ -d "$BASHDIR/util" ]; then
-    for util_file in "$BASHDIR"/util/*.sh; do
-        if [ -f "$util_file" ]; then
-            source "$util_file"
-        fi
-    done
-fi
+source "$BASHDIR/env.sh"
+[ -f "$BASHDIR/local.sh" ] && source "$BASHDIR/local.sh"
 
-# 2. Source other preferences (except aliases.sh)
-if [ -d "$BASHDIR/preferences" ]; then
-    for pref_file in "$BASHDIR"/preferences/*.sh; do
-        if [ -f "$pref_file" ] && [ "$pref_file" != "$BASHDIR/preferences/aliases.sh" ]; then
-            source "$pref_file"
-        fi
-    done
-fi
+# Everything below is for interactive shells only. Stopping here keeps
+# `ssh host cmd`, scp and rsync from running tmux, prompts or aliases.
+case $- in
+  *i*) ;;
+  *) return ;;
+esac
 
-# 3. Source commands
-if [ -d "$BASHDIR/commands" ]; then
-    for cmd_dir in "$BASHDIR"/commands/*; do
-        if [ -d "$cmd_dir" ]; then
-            for cmd_file in "$cmd_dir"/*.sh; do
-                if [ -f "$cmd_file" ]; then
-                    source "$cmd_file"
-                fi
-            done
-        fi
-    done
-fi
+source "$BASHDIR/interactive/oh_my_bash.sh"
+source "$BASHDIR/interactive/tmux.sh"
 
-# 4. Load aliases LAST to prevent overrides
-if [ -f "$BASHDIR/preferences/aliases.sh" ]; then
-    source "$BASHDIR/preferences/aliases.sh"
-fi
+for fn_file in "$BASHDIR"/functions/*.sh; do
+  [ -f "$fn_file" ] && source "$fn_file"
+done
+unset fn_file
+
+source "$BASHDIR/interactive/aliases.sh"
