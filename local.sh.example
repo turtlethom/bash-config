@@ -2,22 +2,24 @@
 # Machine-specific settings. Copy to local.sh (which git ignores) and edit:
 #   cp ~/bashconfig/local.sh.example ~/bashconfig/local.sh
 #
-# local.sh is loaded right after env.sh, for EVERY shell. Put PATH changes at
-# the top; wrap anything interactive-only (prompts, wrappers, output) in the
-# guard at the bottom.
+# Use this only for things that exist on ONE machine. Anything you want on
+# every machine belongs in env.sh or interactive/ (with an existence check).
+#
+# local.sh is loaded right after env.sh, for every shell that reads ~/.bashrc.
+# Put PATH changes at the top; wrap anything interactive-only (prompts,
+# wrappers, output) in the guard at the bottom.
 #
 # path_append / path_prepend come from env.sh: they skip missing directories
 # and never add a duplicate.
 
 # --- PATH (all shells) ---
-# path_prepend "$HOME/src/z390/bash/"
-# path_append  "$HOME/go/bin"
-# path_append  "$HOME/.local/bin"
+# path_prepend "$HOME/src/z390/bash"
+# path_append  "/opt/some-tool/bin"
 
-# --- Tool init scripts (all shells) ---
-# [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+# --- Exports (all shells) ---
+# export EDITOR=nvim
 
 # --- Interactive only ---
 # if [[ $- == *i* ]]; then
-#   [ -f "$HOME/.local/share/fcd/fcd.bash" ] && source "$HOME/.local/share/fcd/fcd.bash"
+#   alias work='cd ~/work/project'
 # fi

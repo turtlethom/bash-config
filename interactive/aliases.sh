@@ -1,17 +1,25 @@
 # Colorize Grep
 alias grep='grep --color=auto'
 
-## Nagivation
+## Navigation
 alias ..='cd ..'
 alias ...='cd ../..'
-
-# 'ls' Aliases
 alias c='clear'
-alias ls='logo-ls -1 -D'
-alias lsa='logo-ls -1 -A -D'
-alias l.='logo-ls -i -a -1 -D | grep "^\."'
+
+# 'ls' Aliases: logo-ls adds icons + git status; plain ls is the fallback,
+# so ls/lsa/l. work on every machine.
+if command -v logo-ls >/dev/null 2>&1; then
+  alias ls='logo-ls -1 -D'
+  alias lsa='logo-ls -1 -A -D'
+  alias l.='logo-ls -i -a -1 -D | grep "^\."'
+else
+  alias ls='ls -1 --color=auto'
+  alias lsa='ls -1 -A'
+  alias l.='ls -1 -d .*'
+fi
 
 # Git Aliases
+alias g='git'
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit -m"

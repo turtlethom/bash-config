@@ -9,11 +9,18 @@ esac
 # Path to your oh-my-bash installation.
 export OSH="$HOME/.oh-my-bash"
 
-if [ -f "$OSH/oh-my-bash.sh" ]; then
-  source "$OSH/oh-my-bash.sh"
-else
-  echo "Oh My Bash not found at $OSH"
+# Not installed: say how to get it, then skip the rest of this file.
+# (Don't use oh-my-bash's own installer: it replaces ~/.bashrc.)
+if [ ! -f "$OSH/oh-my-bash.sh" ]; then
+  {
+    echo "bashconfig: oh-my-bash is not installed (prompt theme and plugins are off)."
+    echo "  Install: git clone --depth=1 https://github.com/ohmybash/oh-my-bash.git ~/.oh-my-bash"
+    echo "  Or run:  bash $BASHDIR/install.sh"
+  } >&2
+  return 0
 fi
+
+# Settings below must be set BEFORE oh-my-bash is sourced (end of file).
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
@@ -109,10 +116,9 @@ aliases=(
 # Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git
-  bashmarks
-)
+# (The git plugin is off: its 100+ aliases clashed with interactive/aliases.sh.
+# Git Tab completion comes from completions=(git) above.)
+plugins=()
 
 # Which plugins would you like to conditionally load? (plugins can be found in ~/.oh-my-bash/plugins/*)
 # Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
@@ -151,7 +157,8 @@ source "$OSH"/oh-my-bash.sh
 # alias bashconfig="mate ~/.bashrc"
 # alias ohmybash="mate ~/.oh-my-bash"
 #
-# Enable bash completion if installed
-if [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
+# Enable bash-completion (oh-my-bash doesn't). Login shells, like tmux panes,
+# already loaded it from /etc/profile.d, so skip it there.
+if [ -z "${BASH_COMPLETION_VERSINFO-}" ] && [ -f /usr/share/bash-completion/bash_completion ]; then
+  source /usr/share/bash-completion/bash_completion
 fi
