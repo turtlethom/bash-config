@@ -5,7 +5,8 @@
 #   1. Checks dependencies and offers to install anything missing
 #   2. Checks the tmux config (tmux-config repo) and tpm
 #   3. Checks fcd (own repo), reports optional tools and the font requirement
-#   4. Generates the bashconfig block in ~/.bashrc and cleans up lines the
+#   4. Points Claude Code's status line at claude/statusline.sh
+#   5. Generates the bashconfig block in ~/.bashrc and cleans up lines the
 #      repo now handles (shows a diff, asks first, keeps a backup). Last, so
 #      it also cleans lines that installers above just appended.
 # Nothing is changed or installed without a y/N prompt; the default is No.
@@ -185,6 +186,7 @@ optional go    /usr/local/go/bin/go               "https://go.dev/doc/install"
 optional cargo "$HOME/.cargo/bin/cargo"           "https://rustup.rs"
 optional sdk   "$HOME/.sdkman/bin/sdkman-init.sh" "https://sdkman.io/install"
 optional webi  "$HOME/.local/bin/webi"            "https://webinstall.dev"
+optional claude "$HOME/.local/bin/claude"         "https://code.claude.com/docs/en/setup"
 echo "  Note: the rustup and SDKMAN installers append their own line to"
 echo "  ~/.bashrc. env.sh already loads both; the ~/.bashrc step removes it."
 
@@ -227,9 +229,64 @@ echo "  your terminal app (on WSL: Windows Terminal > Settings > Profile >"
 echo "  Appearance > Font face). Get one at https://www.nerdfonts.com"
 echo "  Without it, the prompt and ls show empty boxes instead of icons."
 
+#----------------------------------------------------------------------------
+# 4. Claude Code status line
+#----------------------------------------------------------------------------
+# Sets "statusLine" in Claude Code's settings.json to run claude/statusline.sh.
+# Only that key changes; jq rewrites the file and keeps every other setting.
+# Works before Claude Code is installed: it reads the file when it starts.
+echo
+echo "== Claude Code status line"
+
+claude_settings="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
+
+# Write $HOME literally when the repo is under it, like the ~/.bashrc block.
+if [[ "$bashdir" == "$HOME"/* ]]; then
+  statusline_cmd="bash \"\$HOME/${bashdir#"$HOME"/}/claude/statusline.sh\""
+else
+  statusline_cmd="bash \"$bashdir/claude/statusline.sh\""
+fi
+
+current_cmd=""
+settings_ok=1
+if [[ -f "$claude_settings" ]] && have jq; then
+  current_cmd="$(jq -r '.statusLine.command // empty' "$claude_settings" 2>/dev/null)" || settings_ok=0
+fi
+
+if ! have jq; then
+  echo "  [--]      needs jq (see Required tools), then re-run this script"
+elif (( ! settings_ok )); then
+  echo "  [broken]  $claude_settings isn't valid JSON; fix it and re-run"
+elif [[ "$current_cmd" == "$statusline_cmd" ]]; then
+  echo "  [ok]      statusLine in $claude_settings"
+else
+  if [[ -n "$current_cmd" ]]; then
+    echo "  [differs] statusLine runs: $current_cmd"
+  else
+    echo "  [missing] statusLine in $claude_settings"
+  fi
+  echo "  Set it to: $statusline_cmd"
+  if ask "  Apply it?"; then
+    if [[ -f "$claude_settings" ]]; then
+      new_settings="$(jq --arg cmd "$statusline_cmd" \
+        '.statusLine = {type: "command", command: $cmd}' "$claude_settings")"
+      backup="$claude_settings.bak.$(date +%Y%m%d-%H%M%S)"
+      cp -- "$claude_settings" "$backup"
+      echo "  backed up to $backup"
+    else
+      new_settings="$(jq -n --arg cmd "$statusline_cmd" \
+        '{statusLine: {type: "command", command: $cmd}}')"
+      mkdir -p -- "$(dirname -- "$claude_settings")"
+    fi
+    printf '%s\n' "$new_settings" > "$claude_settings"   # keeps permissions and symlinks
+    echo "  [ok]      statusLine set (restart Claude Code if it is running)"
+  else
+    echo "  [skipped] $claude_settings left unchanged"
+  fi
+fi
 
 #----------------------------------------------------------------------------
-# 4. ~/.bashrc is generated from this repo (last; see header)
+# 5. ~/.bashrc is generated from this repo (last; see header)
 #----------------------------------------------------------------------------
 # ~/.bashrc should hold only the managed block below. Each run:
 #   a. rewrites the block between the markers (or adds it at the end)

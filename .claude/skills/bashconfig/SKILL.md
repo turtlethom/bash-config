@@ -109,6 +109,7 @@ append to `~/.bashrc`, so one run also cleans what they just added.
 | fcd (user's own Go tool) | `interactive/tools.sh` | clone `turtlethom/fcd` to `~/Desktop/workspace/TURTLETHOM/linux_tools/fcd`, run `scripts/install.sh` from the repo root |
 | webi | its own line in `~/.bashrc`, after the block (webi re-adds it if missing) | reported as optional with a link |
 | Go, cargo, SDKMAN, envman | `env.sh` | reported as optional with a link |
+| Claude Code + status line | `claude/statusline.sh`, run via `statusLine` in `~/.claude/settings.json` | reported as optional with a link; `install.sh` sets `statusLine` (asks) |
 
 The user owns tmux-config and fcd. Changes to those repos follow the same
 rules (approval, user commits) — and check which branch they're on first.
