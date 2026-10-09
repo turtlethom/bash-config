@@ -43,6 +43,7 @@ This repository contains a personal Bash configuration setup that works across b
 | `interactive/oh_my_bash.sh`  | Oh My Bash configuration and prompt (prints install hint if absent) |
 | `interactive/tools.sh`       | Wrappers/completions for optional tools (fcd)                     |
 | `interactive/tmux.sh`        | Auto-attach new terminals to the tmux session `main`              |
+| `claude/statusline.sh`       | Claude Code status line in the powerline prompt's style (run by `~/.claude/settings.json`, not sourced) |
 | `interactive/aliases.sh`     | Custom aliases — loaded last so nothing overrides them            |
 | `functions/*.sh`             | One shell function (plus its completion) per file                 |
 

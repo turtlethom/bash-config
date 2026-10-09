@@ -70,6 +70,7 @@ need() {
 need git     git     git
 need tmux    tmux    tmux
 need python3 python3 python
+need jq      jq      jq
 
 # bash-completion is a file, not a command (Tab completion for git, fcd, ...)
 if [[ "$pm" == apt ]]; then
